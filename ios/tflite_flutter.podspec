@@ -23,9 +23,35 @@ TensorFlow Lite plugin for Flutter apps.
   s.dependency 'Flutter'
   
   tflite_version = '2.17.0'
-  s.dependency 'TensorFlowLiteSwift', tflite_version
-  s.dependency 'TensorFlowLiteSwift/Metal', tflite_version
-  s.dependency 'TensorFlowLiteSwift/CoreML', tflite_version
+
+  # TensorFlowLiteC, NOT TensorFlowLiteSwift.
+  #
+  # This is an FFI plugin: lib/src/bindings/bindings.dart resolves symbols with
+  # `DynamicLibrary.process()` on iOS, i.e. against the C API that
+  # TensorFlowLiteC links into the app. Nothing here compiles against the Swift
+  # wrapper — ios/Classes/TfliteFlutterPlugin.swift imports only Flutter and
+  # UIKit and implements nothing but `getPlatformVersion`.
+  #
+  # TensorFlowLiteC was already being pulled in transitively, because
+  # TensorFlowLiteSwift/Core depends on it. Depending on it directly removes a
+  # layer that was downloaded and never called.
+  #
+  # The practical reason: TensorFlowLiteSwift's podspec sources from
+  #   { :git => "https://github.com/tensorflow/tensorflow.git",
+  #     :commit => "ad6d8cc177d0c868982e39e0823d0efbfb95f04c" }
+  # so `pod install` clones the entire TensorFlow monorepo to extract a few
+  # .swift files. On any connection that cannot sustain a multi-GB fetch that
+  # fails with
+  #     error: RPC failed / fatal: early EOF
+  #     fatal: fetch-pack: invalid index-pack output
+  # TensorFlowLiteC is a ~50 MB prebuilt tarball from dl.google.com instead.
+  #
+  # Privacy manifests are preserved: each TensorFlowLiteC subspec ships its own
+  # PrivacyInfo.xcprivacy inside its xcframework. The only manifest dropped is
+  # the Swift wrapper's, which covered code no longer shipped.
+  s.dependency 'TensorFlowLiteC', tflite_version
+  s.dependency 'TensorFlowLiteC/Metal', tflite_version
+  s.dependency 'TensorFlowLiteC/CoreML', tflite_version
 
   s.platform = :ios, '12.0'
   s.static_framework = true
