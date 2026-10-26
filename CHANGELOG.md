@@ -1,3 +1,15 @@
+## 0.12.4 (October 26, 2026)
+* Android: pin the Kotlin `jvmTarget` to 11 to match `compileOptions`
+* Flutter 3.47+ applies the Kotlin Android plugin to plugin modules that don't apply it themselves, so `src/main/kotlin` is now compiled; without an explicit target Kotlin used the running JDK (21) and the build failed with "Inconsistent JVM Target Compatibility Between Java and Kotlin Tasks"
+* Scoped with `plugins.withId`, so builds on older Flutter versions are unaffected
+
+## 0.12.3 (October 9, 2026)
+* iOS: depend on `TensorFlowLiteC` (prebuilt tarball) instead of `TensorFlowLiteSwift`, whose podspec cloned the entire tensorflow/tensorflow monorepo and made `pod install` fail on slow connections
+
+## 0.12.2 (June 15, 2026)
+* iOS: updated TensorFlow Lite to 2.17.0
+* iOS: raised the minimum deployment target to 12.0
+
 ## 0.12.1 (October 28, 2025)
 * **CRITICAL FIX**: Properly implement Android 16KB page size support
 * Migrated from TensorFlow Lite 2.12.0 to Google AI Edge LiteRT 1.4.0
