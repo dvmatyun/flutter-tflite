@@ -61,6 +61,18 @@ android {
     }
 }
 
+// Flutter 3.47+ applies the Kotlin Android plugin to every plugin module that
+// does not apply it itself, so src/main/kotlin is now compiled. Without an
+// explicit jvmTarget, Kotlin targets the running JDK (e.g. 21) while Java
+// targets 11 above, and compile<Variant>Kotlin fails on the mismatch.
+plugins.withId('org.jetbrains.kotlin.android') {
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        }
+    }
+}
+
 
 dependencies {
     def litert_version = "1.4.0"
